@@ -1,5 +1,5 @@
 #include"DxLib.h"
-//#include"Run.h"
+#include"Run.h"
 #include"stdio.h"
 
 	const int UpSpeed = 1;//↑キーを押した時の加速量
@@ -16,6 +16,10 @@
 	int distance = 0;//スタート地点からの移動距離
 	int Goal = 10000;//GoalがあるモードでのGoalまでの距離
 	int HIdistance = 0;//到達したことのある最高地点
+	int imgBackGround, imgRoad, imgRoad2;//背景、道、道
+	int imgPLC;//プレイヤーキャラ
+	int imgObstancles[obstancles_MAX];//障害物
+	int imgHYOSIKI;//標識
 	
 	enum{};
 
@@ -31,9 +35,13 @@ int APIENTRY WinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hPrevInstance,
 	SetBackgroundColor(0, 0, 0);
 	SetDrawScreen(DX_SCREEN_BACK);
 
+	initGame();
+
 	while (1)
 	{
 		ClearDrawScreen();
+
+		DrawExtendGraph(0, 0, WIDTH, HEIGHT, imgBackGround, FALSE);
 
 		ScreenFlip();
 		if (ProcessMessage() == -1)
@@ -48,4 +56,13 @@ int APIENTRY WinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hPrevInstance,
 
 	DxLib_End();
 	return 0;
+}
+
+void initGame(void)
+{
+	//画像読み込み
+	imgBackGround = LoadGraph("images/back_ground.png");
+	imgRoad = LoadGraph("images/car_road.png");
+	imgRoad2 = LoadGraph("images/car_road_copy.png");
+	imgPLC = LoadGraph("images/Playerchara.png");
 }

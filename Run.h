@@ -9,4 +9,4 @@ struct OBJECT
 	int image;//‰æ‘œ
 };
 
-//void initGame(void);
+void initGame(void);
