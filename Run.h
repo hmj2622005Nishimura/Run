@@ -7,6 +7,12 @@ struct OBJECT
 	int vx;//xŽ²‚ÌˆÚ“®‘¬“x
 	int vy;//yŽ²‚ÌˆÚ“®‘¬“x
 	int image;//‰æ‘œ
+	int state;
+	int pattern;
+	int wid;
+	int hei;
+	int timer;
 };
 
 void initGame(void);
+void scrollRD(int spdRD);
