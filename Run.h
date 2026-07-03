@@ -16,3 +16,6 @@ struct OBJECT
 
 void initGame(void);
 void scrollRD(int spdRD);
+void initVariable(void);
+void drawImage(int img, int x, int y);
+void movePlayer(void);

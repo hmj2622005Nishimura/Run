@@ -23,6 +23,8 @@
 	
 	enum{};
 
+	struct OBJECT PLC;//プレイヤーキャラの宣言
+
 int APIENTRY WinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
 	SetWindowText("a");//タイトル
@@ -36,12 +38,14 @@ int APIENTRY WinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hPrevInstance,
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	initGame();
+	initVariable();
 
 	while (1)
 	{
 		ClearDrawScreen();
 
 		scrollRD(1);
+		movePlayer();
 
 		ScreenFlip();
 		if (ProcessMessage() == -1)
@@ -63,7 +67,6 @@ void initGame(void)
 	//画像読み込み
 	imgBackGround = LoadGraph("images/back_ground.png");
 	imgRoad = LoadGraph("images/car_road.png");
-	imgRoad2 = LoadGraph("images/car_road_copy.png");
 	imgRoad3 = LoadGraph("images/car_road_copy2.png");
 	imgPLC = LoadGraph("images/Playerchara.png");
 }
@@ -71,14 +74,41 @@ void initGame(void)
 void scrollRD(int spdRD)
 {
 	static int BackGroundY, RoadY;
-	/*/BackGroundY = (BackGroundY + spdRD) % HEIGHT;
-	DrawExtendGraph(0, BackGroundY - HEIGHT,1200,720, imgBackGround, FALSE);*/
+	BackGroundY = (BackGroundY + spdRD) % HEIGHT;
+	DrawExtendGraph(0, BackGroundY - HEIGHT,1200,720, imgBackGround, FALSE);
 	DrawExtendGraph(0, BackGroundY,1200,720, imgBackGround, FALSE);
 	RoadY = (RoadY + spdRD * 2) % 120;
 	for (int i = -1; i < 6; i++)
 	{
 		DrawGraph(100, RoadY + i * 130, imgRoad, TRUE);
-		DrawGraph(600, RoadY + i * 130, imgRoad2, TRUE);
+		DrawGraph(600, RoadY + i * 130, imgRoad, TRUE);
 		DrawGraph(350, RoadY + i * 130, imgRoad3, TRUE);
+	}
+}
+
+void initVariable(void)
+{
+	PLC.x = WIDTH / 2;
+	PLC.y = HEIGHT / 2;
+	PLC.vx = 5;
+	PLC.vy = 0;
+}
+
+void drawImage(int img, int x, int y)
+{
+	int w, h;
+	GetGraphSize(img, &w, &h);
+	DrawGraph(x - w / 2, y - h / 2, img, TRUE);
+}
+
+void movePlayer(void)
+{
+	if (CheckHitKey(KEY_INPUT_LEFT))
+	{
+		PLC.x -= PLC.vx;
+	}
+	if (CheckHitKey(KEY_INPUT_RIGHT))
+	{
+		PLC.x += PLC.vx;
 	}
 }
