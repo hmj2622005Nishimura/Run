@@ -19,3 +19,6 @@ void scrollRD(int spdRD);
 void initVariable(void);
 void drawImage(int img, int x, int y);
 void movePlayer(void);
+int setEnemy(int x, int y, int vx, int vy, int ptn, int img, int sld);
+void moveOBS(void);
+void distanceM(void);

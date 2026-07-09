@@ -8,22 +8,26 @@
 	const int FPS = 60;
 	const int WIDTH = 1200, HEIGHT = 720;//画面の幅、高さ
 	const int obstancles_MAX = 2;//敵の種類
+	const int OBS_MAX = 100;//障害物の最大数
 	
-	int MoveSpeed = 30;//移動速度
+	float distance = 0;//スタート地点からの移動距離
+	float MoveSpeed = 30;//移動速度
+
 	int Hyosiki = 0;//速度標識用
 	int OverSpeed = 0;//速度超過分
 	int BelowSpeed = 0;//速度が遅すぎた分
-	int distance = 0;//スタート地点からの移動距離
 	int Goal = 10000;//GoalがあるモードでのGoalまでの距離
 	int HIdistance = 0;//到達したことのある最高地点
+	int imgPLC;//プレイヤーキャラ	
 	int imgBackGround, imgRoad, imgRoad2, imgRoad3;//背景、道、道、道
-	int imgPLC;//プレイヤーキャラ
+
 	int imgObstancles[obstancles_MAX];//障害物
 	int imgHYOSIKI;//標識
 	
-	enum{};
+	enum{cat,uni};//敵の種類一覧
 
 	struct OBJECT PLC;//プレイヤーキャラの宣言
+	struct OBJECT OBS[OBS_MAX];
 
 int APIENTRY WinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
@@ -45,6 +49,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hPrevInstance,
 		ClearDrawScreen();
 
 		scrollRD(1);
+		distanceM();
 		movePlayer();
 
 		ScreenFlip();
@@ -88,9 +93,9 @@ void scrollRD(int spdRD)
 
 void initVariable(void)
 {
-	PLC.x = WIDTH / 2;
-	PLC.y = HEIGHT / 2;
-	PLC.vx = 5;
+	PLC.x = WIDTH / 2;//初期地点の横軸設定
+	PLC.y = HEIGHT - 100;//初期地点の高さ設定
+	PLC.vx = 8;//移動速度
 	PLC.vy = 0;
 }
 
@@ -98,17 +103,27 @@ void drawImage(int img, int x, int y)
 {
 	int w, h;
 	GetGraphSize(img, &w, &h);
-	DrawGraph(x - w / 2, y - h / 2, img, TRUE);
+	DrawExtendGraph(x - w / 5, y - h / 5, x + w / 5, y + h / 5, img, TRUE);
 }
 
 void movePlayer(void)
 {
-	if (CheckHitKey(KEY_INPUT_LEFT))
+	if (CheckHitKey(KEY_INPUT_LEFT))//移動キー設定　左
 	{
 		PLC.x -= PLC.vx;
 	}
-	if (CheckHitKey(KEY_INPUT_RIGHT))
+	if (CheckHitKey(KEY_INPUT_RIGHT))//移動キー設定　右
 	{
 		PLC.x += PLC.vx;
 	}
+	drawImage(imgPLC, PLC.x, PLC.y);
+}
+
+void distanceM(void)
+{
+	if (distance >= 0)
+	{
+		distance = distance + MoveSpeed * 0.005f;
+	}
+	DrawFormatString(0, 0, 0xffff00, "移動距離%f M", distance);
 }
