@@ -20,14 +20,16 @@
 	int HIdistance = 0;//到達したことのある最高地点
 	int imgPLC;//プレイヤーキャラ	
 	int imgBackGround, imgRoad, imgRoad2, imgRoad3;//背景、道、道、道
+	int imgCat, imgUni;//猫、ウニ
+	int timer = 0;
 
-	int imgObstancles[obstancles_MAX];//障害物
+	int imgOBS[obstancles_MAX];//障害物
 	int imgHYOSIKI;//標識
 	
 	enum{cat,uni};//敵の種類一覧
 
 	struct OBJECT PLC;//プレイヤーキャラの宣言
-	struct OBJECT OBS[OBS_MAX];
+	struct OBJECT OBS[OBS_MAX];//障害物の宣言
 
 int APIENTRY WinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
@@ -47,9 +49,26 @@ int APIENTRY WinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hPrevInstance,
 	while (1)
 	{
 		ClearDrawScreen();
+		timer++;
 
 		scrollRD(1);
 		distanceM();
+		if (timer % 30 == 1)
+		{
+			int x = 100 + rand() % (WIDTH - 200);
+			int y = -50;
+			int e = rand() % 2;
+			if (e == cat)
+			{
+				setOBS(x, y, 0, 3, cat, imgCat,imgOBS[cat]);
+			}
+			if (e == uni)
+			{
+				setOBS(x, y, 0, 3, uni, imgUni,imgOBS[uni]);
+
+			}
+		}
+		moveOBS();
 		movePlayer();
 
 		ScreenFlip();
@@ -74,6 +93,8 @@ void initGame(void)
 	imgRoad = LoadGraph("images/car_road.png");
 	imgRoad3 = LoadGraph("images/car_road_copy2.png");
 	imgPLC = LoadGraph("images/Playerchara.png");
+	imgCat = LoadGraph("images/cat.png");
+	imgUni = LoadGraph("images/ウニ.png");
 }
 
 void scrollRD(int spdRD)
@@ -126,4 +147,40 @@ void distanceM(void)
 		distance = distance + MoveSpeed * 0.005f;
 	}
 	DrawFormatString(0, 0, 0xffff00, "移動距離%f M", distance);
+}
+
+int setOBS(int x, int y, int vx, int vy, int ptn, int img, int sld)
+{
+	for (int i = 0; i < OBS_MAX; i++)
+	{
+		if (OBS[i].state == 0)
+		{
+			OBS[i].x = x;
+			OBS[i].y = y;
+			OBS[i].vx = vx;
+			OBS[i].vy = vy;
+			OBS[i].state = 1;
+			OBS[i].pattern = ptn;
+			OBS[i].image = img;
+			return i;
+		}
+	}
+}
+
+void moveOBS(void)
+{
+	for (int i = 0; i < OBS_MAX; i++)
+	{
+		if (OBS[i].state == 0)
+		{
+			continue;
+		}
+		OBS[i].x += OBS[i].vx;
+		OBS[i].y += OBS[i].vy;
+		drawImage(OBS[i].image, OBS[i].x, OBS[i].y);
+		if (OBS[i].y < -200 || HEIGHT + 200 < OBS[i].y)
+		{
+			OBS[i].state = 0;
+		}
+	}
 }
