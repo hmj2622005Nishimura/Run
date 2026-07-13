@@ -1,6 +1,7 @@
 #include"DxLib.h"
 #include"Run.h"
 #include"stdio.h"
+#include"stdlib.h"
 
 	const int UpSpeed = 1;//↑キーを押した時の加速量
 	const int DownSpeed = -1;//↓キーを押したときの減速量
@@ -9,6 +10,7 @@
 	const int WIDTH = 1200, HEIGHT = 720;//画面の幅、高さ
 	const int obstancles_MAX = 2;//敵の種類
 	const int OBS_MAX = 100;//障害物の最大数
+	const int PLC_LIFE_MAX = 5;//プレイヤーキャラのライフの最大値
 	
 	float distance = 0;//スタート地点からの移動距離
 	float MoveSpeed = 30;//移動速度
@@ -22,6 +24,7 @@
 	int imgBackGround, imgRoad, imgRoad2, imgRoad3;//背景、道、道、道
 	int imgCat, imgUni;//猫、ウニ
 	int timer = 0;
+	int noD = 0;//無敵状態
 
 	int imgOBS[obstancles_MAX];//障害物
 	int imgHYOSIKI;//標識
@@ -53,7 +56,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hPrevInstance,
 
 		scrollRD(1);
 		distanceM();
-		if (timer % 30 == 1)
+		if (timer % 90/*ここの数を変えることで障害物の出現頻度をいじることができる*/ == 1)
 		{
 			int x = 100 + rand() % (WIDTH - 200);
 			int y = -50;
@@ -118,6 +121,8 @@ void initVariable(void)
 	PLC.y = HEIGHT - 100;//初期地点の高さ設定
 	PLC.vx = 8;//移動速度
 	PLC.vy = 0;
+	PLC.life = PLC_LIFE_MAX;
+	GetGraphSize(imgPLC, &PLC.wid, &PLC.hei);
 }
 
 void drawImage(int img, int x, int y)
@@ -137,7 +142,15 @@ void movePlayer(void)
 	{
 		PLC.x += PLC.vx;
 	}
+	if (noD > 0)
+	{
+		noD--;
+	}
 	drawImage(imgPLC, PLC.x, PLC.y);
+	if (noD % 4 < 2)
+	{
+		drawImage(imgPLC, PLC.x, PLC.y);
+	}
 }
 
 void distanceM(void)
@@ -155,8 +168,8 @@ int setOBS(int x, int y, int vx, int vy, int ptn, int img, int sld)
 	{
 		if (OBS[i].state == 0)
 		{
-			OBS[i].x = x;
-			OBS[i].y = y;
+			OBS[i].x = 3;
+			OBS[i].y = 5;
 			OBS[i].vx = vx;
 			OBS[i].vy = vy;
 			OBS[i].state = 1;
@@ -181,6 +194,20 @@ void moveOBS(void)
 		if (OBS[i].y < -200 || HEIGHT + 200 < OBS[i].y)
 		{
 			OBS[i].state = 0;
+		}
+		if (noD == 0)
+		{
+			int dx = abs(OBS[i].x - PLC.x);
+			int dy = abs(OBS[i].y - PLC.y);
+			if (dx < OBS[i].wid / 2 + PLC.wid / 2 && dy < OBS[i].hei / 2 + PLC.hei / 2)
+			{
+				if (PLC.life > 0)
+				{
+					PLC.life--;
+				}
+				noD = 60;
+				OBS[i].state = 0;
+			}
 		}
 	}
 }
