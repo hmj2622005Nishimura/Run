@@ -168,8 +168,8 @@ int setOBS(int x, int y, int vx, int vy, int ptn, int img, int sld)
 	{
 		if (OBS[i].state == 0)
 		{
-			OBS[i].x = 3;
-			OBS[i].y = 5;
+			OBS[i].x = x;
+			OBS[i].y = y;
 			OBS[i].vx = vx;
 			OBS[i].vy = vy;
 			OBS[i].state = 1;
