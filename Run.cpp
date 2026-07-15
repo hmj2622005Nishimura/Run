@@ -2,6 +2,7 @@
 #include"Run.h"
 #include"stdio.h"
 #include"stdlib.h"
+#include"time.h"
 
 	const int UpSpeed = 1;//↑キーを押した時の加速量
 	const int DownSpeed = -1;//↓キーを押したときの減速量
@@ -56,6 +57,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hPrevInstance,
 
 		scrollRD(1);
 		distanceM();
+		MSM();
 		if (timer % 90/*ここの数を変えることで障害物の出現頻度をいじることができる*/ == 1)
 		{
 			int x = 100 + rand() % (WIDTH - 200);
@@ -63,16 +65,26 @@ int APIENTRY WinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hPrevInstance,
 			int e = rand() % 2;
 			if (e == cat)
 			{
-				setOBS(x, y, 0, 3, cat, imgCat,imgOBS[cat]);
+				setOBS(x, y, 0, MoveSpeed / 10, cat, imgCat,imgOBS[cat]);
 			}
 			if (e == uni)
 			{
-				setOBS(x, y, 0, 3, uni, imgUni,imgOBS[uni]);
+				setOBS(x, y, 0, MoveSpeed / 15, uni, imgUni,imgOBS[uni]);
 
 			}
 		}
+
+		if (timer % 1200 < 180)//20秒に一回３秒表示
+		{
+			HYOSIKIM();
+		}
+		if (MoveSpeed < 2)
+		{
+			MoveSpeed = 2;
+		}
 		moveOBS();
 		movePlayer();
+		int Hyosiki = GetRand(100) % 99 + 1;
 
 		ScreenFlip();
 		if (ProcessMessage() == -1)
@@ -118,7 +130,7 @@ void scrollRD(int spdRD)
 void initVariable(void)
 {
 	PLC.x = WIDTH / 2;//初期地点の横軸設定
-	PLC.y = HEIGHT - 100;//初期地点の高さ設定
+	PLC.y = HEIGHT - 50;//初期地点の高さ設定
 	PLC.vx = 8;//移動速度
 	PLC.vy = 0;
 	PLC.life = PLC_LIFE_MAX;
@@ -146,6 +158,14 @@ void movePlayer(void)
 	{
 		noD--;
 	}
+	if (CheckHitKey(KEY_INPUT_UP))
+	{
+		MoveSpeed++;
+	}
+	if (CheckHitKey(KEY_INPUT_DOWN))
+	{
+		MoveSpeed--;
+	}
 	drawImage(imgPLC, PLC.x, PLC.y);
 	if (noD % 4 < 2)
 	{
@@ -159,7 +179,7 @@ void distanceM(void)
 	{
 		distance = distance + MoveSpeed * 0.005f;
 	}
-	DrawFormatString(0, 0, 0xffff00, "移動距離%f M", distance);
+	DrawExtendFormatString(0, 0,2,2, 0xffff00, "移動距離%.2f M", distance);
 }
 
 int setOBS(int x, int y, int vx, int vy, int ptn, int img, int sld)
@@ -191,7 +211,7 @@ void moveOBS(void)
 		OBS[i].x += OBS[i].vx;
 		OBS[i].y += OBS[i].vy;
 		drawImage(OBS[i].image, OBS[i].x, OBS[i].y);
-		if (OBS[i].y < -200 || HEIGHT + 200 < OBS[i].y)
+		if (OBS[i].y < -100 || HEIGHT + 200 < OBS[i].y)
 		{
 			OBS[i].state = 0;
 		}
@@ -210,4 +230,16 @@ void moveOBS(void)
 			}
 		}
 	}
+}
+
+void MSM(void)
+{
+	DrawExtendFormatString(0, 30, 2, 2, 0xffffff, "時速%.2fKm", MoveSpeed);
+	DrawExtendFormatString(0, 60, 2, 2, 0x386393, "残り体力　%d", PLC.life);
+}
+
+void HYOSIKIM(void)
+{
+	
+	DrawExtendFormatString(60, 30, 2, 2, 0x005555, "時速%d", Hyosiki);
 }

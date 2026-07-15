@@ -23,5 +23,5 @@ void movePlayer(void);
 int setOBS(int x, int y, int vx, int vy, int ptn, int img, int sld);
 void moveOBS(void);
 void distanceM(void);
-void drawText(int x, int y, const char* txt, int val, int col, int size);
-void drawPramater(void);
+void MSM(void);
+void HYOSIKIM(void);
